@@ -39,7 +39,7 @@ A high-performance, fault-tolerant, and modular microservice that ingests user j
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/taskrouterx.git
+git clone https://github.com/QHarshil/TaskRouterX.git
 cd taskrouterx
 ```
 
