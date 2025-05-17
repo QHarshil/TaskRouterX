@@ -305,6 +305,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+venv_py310/
 env/
 venv/
 ENV/
