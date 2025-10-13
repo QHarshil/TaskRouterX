@@ -4,7 +4,7 @@
 
 TaskRouterX is a lightweight yet powerful backend service designed to simulate the routing and scheduling of asynchronous tasks to a distributed network of worker pools. It provides a RESTful API for task submission, real-time monitoring through a web dashboard, and a modular architecture that allows for different scheduling algorithms to be plugged in.
 
-This project is built for simplicity and demonstration, running locally with a single command and no external dependencies required.
+Features: 
 
 - **Real-Time Scheduling**: Ingests tasks and schedules them to simulated workers in real-time.
 - **Pluggable Algorithms**: Switch between FIFO, Priority-Based, and Minimum Cost scheduling on the fly.
@@ -14,7 +14,7 @@ This project is built for simplicity and demonstration, running locally with a s
 
 ## 🚀 Getting Started
 
-Get TaskRouterX running on your local machine in under 5 minutes.
+Get TaskRouterX running on your local machine.
 
 ### Prerequisites
 
