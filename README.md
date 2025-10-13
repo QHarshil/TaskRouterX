@@ -12,6 +12,8 @@ Features:
 - **Interactive Dashboard**: A simple, clean web interface to submit tasks, monitor system health, and visualize worker utilization.
 - **Zero Dependencies**: Runs entirely locally with Python and SQLite, no Docker or external databases needed.
 
+![Alt text](assets/demo-pic-1.png) ![Alt text](assets/demo-pic-2.png) ![Alt text](assets/demo-pic-3.png)
+
 ## 🚀 Getting Started
 
 Get TaskRouterX running on your local machine.
