@@ -1,121 +1,116 @@
 # TaskRouterX
 
-A high-performance, fault-tolerant, and modular microservice that ingests user jobs and routes them to simulated worker pools based on cost, priority, and latency. Bundled with a lightweight Streamlit dashboard for non-technical users.
+**A High-Performance, Cost-Aware Task Routing and Scheduling Engine**
 
-## Features
+TaskRouterX is a lightweight yet powerful backend service designed to simulate the routing and scheduling of asynchronous tasks to a distributed network of worker pools. It provides a RESTful API for task submission, real-time monitoring through a web dashboard, and a modular architecture that allows for different scheduling algorithms to be plugged in.
 
-- Real-time task routing with sub-100ms decision making
-- Multiple scheduling algorithms (FIFO, Greedy, Min-Cost Flow, ML-Driven)
-- Comprehensive observability with Prometheus, OpenTelemetry, and structured logging
-- Secure API with OAuth2/JWT authentication and role-based access control
-- User-friendly Streamlit dashboard for monitoring and control
-- Horizontal scaling with Redis Streams consumer groups
-- Fault tolerance with dead letter queues and circuit breakers
+This project is built for simplicity and demonstration, running locally with a single command and no external dependencies required.
 
-## Tech Stack
+- **Real-Time Scheduling**: Ingests tasks and schedules them to simulated workers in real-time.
+- **Pluggable Algorithms**: Switch between FIFO, Priority-Based, and Minimum Cost scheduling on the fly.
+- **Cost & Region Awareness**: Makes scheduling decisions based on task cost, priority, and geographic region.
+- **Interactive Dashboard**: A simple, clean web interface to submit tasks, monitor system health, and visualize worker utilization.
+- **Zero Dependencies**: Runs entirely locally with Python and SQLite, no Docker or external databases needed.
 
-- **Language**: Python 3.10+
-- **Web Framework**: FastAPI (async)
-- **Scheduling Queue**: Redis Streams
-- **Persistence**: PostgreSQL (SQLAlchemy + Alembic)
-- **Caching & DLQ**: Redis
-- **Observability**: Prometheus + Grafana, OpenTelemetry
-- **Logging**: Structured JSON → ELK or Loki
-- **Security**: OAuth2/JWT, Role-Based Access Control
-- **UI**: Streamlit
-- **Containerization**: Docker + Docker Compose
-- **CI/CD**: GitHub Actions
+## 🚀 Getting Started
 
-## Getting Started
+Get TaskRouterX running on your local machine in under 5 minutes.
 
 ### Prerequisites
 
-- Python 3.10+
-- Docker and Docker Compose
-- Redis
-- PostgreSQL
+- **Python 3.7+**
+- `pip` and `venv` (usually included with Python)
 
 ### Installation
 
-1. Clone the repository:
+1.  **Clone the repository:**
+
+    ```bash
+    git clone
+    cd taskrouterx
+    ```
+
+2.  **Run the startup script:**
+
+    This single command will create a virtual environment, install dependencies, and start both the backend API and the frontend dashboard. Use bash for convenience:
+
+    ```bash
+    chmod +x start.sh
+    ./start.sh
+    ```
+
+3.  **Access the services:**
+
+    -   **Interactive Dashboard**: [http://localhost:3000](http://localhost:3000)
+    -   **Backend API (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+4.  **Stopping the services:**
+
+    Simply press `Ctrl+C` in the terminal where you ran `./start.sh`.
+
+## 🏗️ Architecture
+
+TaskRouterX uses a simple, modular architecture designed for clarity and extensibility.
+
+| Component          | Technology                | Purpose                                                      |
+| ------------------ | ------------------------- | ------------------------------------------------------------ |
+| **API Server**     | FastAPI                  | Provides a RESTful interface for tasks, monitoring, and configuration. |
+| **Core Engine**    | Python (Multi-Threading)  | Manages the in-memory task queue, scheduler, and worker simulation. |
+| **Database**       | SQLite                    | Persists task, log, and worker pool data.                    |
+| **Frontend**       | HTML, CSS, JS             | A lightweight, interactive dashboard for visualization and control. |
+| **Startup Script** | Shell Script              | Automates setup and runs all services with a single command. |
+
+### Data Flow
+
+1.  A **Task** is submitted to the FastAPI `/api/v1/tasks` endpoint.
+2.  The task is saved to the **SQLite** database with a `QUEUED` status.
+3.  The task ID is pushed into a thread-safe, **in-memory queue**.
+4.  A background **Scheduler** thread pulls the task ID from the queue.
+5.  The active **Scheduling Algorithm** (e.g., Min-Cost) selects the optimal **Worker Pool** based on the task's requirements and current worker load.
+6.  The task is assigned to a simulated **Worker**, which processes it (simulating latency and potential failure).
+7.  The task's status is updated to `COMPLETED` or `FAILED` in the database.
+8.  The **Frontend Dashboard** polls the API to display the latest system stats, worker loads, and task statuses.
+
+## 🎯 Interactive Dashboard
+
+Open [http://localhost:3000](http://localhost:3000) to access the dashboard and:
+
+-   **Submit Tasks**: Create new tasks with varying priorities, costs, and regions.
+-   **Monitor System Stats**: View real-time metrics like tasks processed, pending, failed, and average latency.
+-   **Visualize Worker Pools**: See the current load on each worker pool and how tasks are distributed.
+-   **Switch Scheduling Algorithms**: Change the routing strategy on the fly and observe the impact.
+-   **Run Traffic Simulations**: Generate a configurable number of synthetic tasks to stress-test the system.
+
+## 📚 API Documentation
+
+Full, interactive API documentation is available via Swagger UI after starting the application:
+
+[http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Key Endpoints
+
+-   `POST /api/v1/tasks`: Submit a new task.
+-   `GET /api/v1/tasks`: List recent tasks.
+-   `GET /api/v1/system/stats`: Get real-time system metrics.
+-   `GET /api/v1/workers`: List all worker pools and their status.
+-   `POST /api/v1/algorithms/switch`: Change the active scheduling algorithm.
+-   `POST /api/v1/simulate`: Trigger a synthetic load test.
+
+## 🧪 Testing
+
+To run the test suite, first make sure you have activated the virtual environment created by `start.sh`:
+
 ```bash
-git clone https://github.com/QHarshil/TaskRouterX.git
-cd taskrouterx
+source venv/bin/activate
 ```
 
-2. Create a virtual environment and install dependencies:
+Then, run the tests using `pytest`:
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pytest
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
+## 📜 License
 
-4. Start the required services with Docker Compose:
-```bash
-docker-compose up -d
-```
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-5. Run database migrations:
-```bash
-alembic upgrade head
-```
-
-6. Start the API server:
-```bash
-uvicorn api.main:app --reload
-```
-
-7. In a separate terminal, start the scheduler:
-```bash
-python -m scheduler.runner
-```
-
-8. Start the Streamlit dashboard:
-```bash
-cd dashboard
-streamlit run app.py
-```
-
-## Usage
-
-### API Endpoints
-
-- `POST /api/v1/tasks`: Submit a new task
-- `GET /api/v1/tasks`: List tasks with filtering options
-- `GET /api/v1/tasks/{task_id}`: Get task details
-- `POST /api/v1/simulate`: Generate synthetic traffic patterns
-- `GET /api/v1/metrics`: Prometheus metrics endpoint
-- `GET /api/v1/logs`: Query execution logs
-
-### Dashboard
-
-The Streamlit dashboard provides a user-friendly interface for:
-- Submitting tasks
-- Running simulations
-- Monitoring system performance
-- Viewing logs and metrics
-
-## Architecture
-
-TaskRouterX follows a modular microservice architecture with the following components:
-
-1. **Ingestion API**: FastAPI-based REST API for task submission and monitoring
-2. **Core Scheduler**: Redis Streams-based task queue with pluggable scheduling algorithms
-3. **Worker Simulators**: Simulate task execution with configurable latency and success rates
-4. **Persistence Layer**: PostgreSQL for storing task details, logs, and outcomes
-5. **Observability Stack**: Prometheus metrics, structured logging, and OpenTelemetry tracing
-6. **Dashboard UI**: Streamlit-based user interface for monitoring and control
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.

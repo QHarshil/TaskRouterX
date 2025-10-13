@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskRouterX - Task Routing Dashboard</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ TaskRouterX</h1>
+            <p class="subtitle">High-Performance Task Routing and Scheduling Engine</p>
+            <div class="performance-badges">
+                <span class="badge">Real-Time Scheduling</span>
+                <span class="badge">Multi-Algorithm</span>
+                <span class="badge">Cost-Optimized</span>
+                <span class="badge">Fault-Tolerant</span>
+            </div>
+        </header>
+
+        <div class="services-grid">
+            <!-- Task Submission -->
+            <div class="service-card">
+                <h3>📋 Submit Task</h3>
+                <p>Create and submit tasks for scheduling</p>
+                <div class="api-section">
+                    <div class="task-form">
+                        <select id="task-type" class="form-control">
+                            <option value="order">Order Processing</option>
+                            <option value="simulation">Simulation</option>
+                            <option value="query">Query Execution</option>
+                        </select>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Priority (1-10)</label>
+                                <input type="number" id="task-priority" class="form-control" value="5" min="1" max="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Cost ($)</label>
+                                <input type="number" id="task-cost" class="form-control" value="1.0" min="0.1" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <select id="task-region" class="form-control">
+                            <option value="us-east">US East</option>
+                            <option value="us-west">US West</option>
+                            <option value="eu-west">EU West</option>
+                            <option value="ap-east">AP East</option>
+                        </select>
+                        
+                        <button onclick="submitTask()" class="btn btn-primary">Submit Task</button>
+                    </div>
+                    <div id="task-result" class="result-section"></div>
+                </div>
+            </div>
+
+            <!-- System Statistics -->
+            <div class="service-card">
+                <h3>📊 System Statistics</h3>
+                <p>Real-time performance metrics</p>
+                <div class="api-section">
+                    <div id="system-stats" class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-processed">0</div>
+                            <div class="stat-label">Tasks Processed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-pending">0</div>
+                            <div class="stat-label">Tasks Pending</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-completed">0</div>
+                            <div class="stat-label">Tasks Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-failed">0</div>
+                            <div class="stat-label">Tasks Failed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-latency">0ms</div>
+                            <div class="stat-label">Avg Latency</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-queue">0</div>
+                            <div class="stat-label">Queue Size</div>
+                        </div>
+                    </div>
+                    <button onclick="loadStats()" class="btn btn-secondary">Refresh Stats</button>
+                </div>
+            </div>
+
+            <!-- Worker Pools -->
+            <div class="service-card">
+                <h3>🖥️ Worker Pools</h3>
+                <p>Monitor worker pool utilization</p>
+                <div class="api-section">
+                    <div id="worker-pools" class="workers-grid">
+                        <div class="loading">Loading worker pools...</div>
+                    </div>
+                    <button onclick="loadWorkers()" class="btn btn-secondary">Refresh Workers</button>
+                </div>
+            </div>
+
+            <!-- Recent Tasks -->
+            <div class="service-card">
+                <h3>📝 Recent Tasks</h3>
+                <p>View recently submitted tasks</p>
+                <div class="api-section">
+                    <div id="recent-tasks" class="tasks-list">
+                        <div class="loading">Loading tasks...</div>
+                    </div>
+                    <button onclick="loadTasks()" class="btn btn-secondary">Refresh Tasks</button>
+                </div>
+            </div>
+
+            <!-- Scheduling Algorithm -->
+            <div class="service-card">
+                <h3>⚙️ Scheduling Algorithm</h3>
+                <p>Switch between scheduling strategies</p>
+                <div class="api-section">
+                    <select id="algorithm-select" class="form-control">
+                        <option value="fifo">FIFO (First In First Out)</option>
+                        <option value="priority">Priority-Based</option>
+                        <option value="min_cost">Minimum Cost</option>
+                    </select>
+                    <button onclick="switchAlgorithm()" class="btn btn-info">Switch Algorithm</button>
+                    <div id="algorithm-result" class="result-section"></div>
+                </div>
+            </div>
+
+            <!-- Traffic Simulation -->
+            <div class="service-card">
+                <h3>🚀 Traffic Simulation</h3>
+                <p>Generate synthetic load for testing</p>
+                <div class="api-section">
+                    <div class="simulation-form">
+                        <div class="form-group">
+                            <label>Number of Tasks</label>
+                            <input type="number" id="sim-count" class="form-control" value="50" min="1" max="1000">
+                        </div>
+                        <select id="sim-distribution" class="form-control">
+                            <option value="random">Random Distribution</option>
+                            <option value="weighted">Weighted Distribution</option>
+                            <option value="burst">Burst Pattern</option>
+                        </select>
+                        <button onclick="runSimulation()" class="btn btn-success">Run Simulation</button>
+                    </div>
+                    <div id="simulation-result" class="result-section"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="architecture-info">
+                <h3>🏗️ Architecture Highlights</h3>
+                <div class="tech-stack">
+                    <span class="tech">Python FastAPI</span>
+                    <span class="tech">SQLite</span>
+                    <span class="tech">In-Memory Queue</span>
+                    <span class="tech">Multi-Threading</span>
+                    <span class="tech">RESTful API</span>
+                </div>
+                <div class="features">
+                    <div class="feature">✅ FIFO Scheduling</div>
+                    <div class="feature">✅ Priority-Based Routing</div>
+                    <div class="feature">✅ Cost Optimization</div>
+                    <div class="feature">✅ Worker Simulation</div>
+                    <div class="feature">✅ Real-Time Monitoring</div>
+                    <div class="feature">✅ Fault Tolerance</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="static/js/app.js"></script>
+</body>
+</html>
+

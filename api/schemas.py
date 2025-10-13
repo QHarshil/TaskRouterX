@@ -1,17 +1,24 @@
+"""
+Pydantic schemas for API request/response validation.
+
+This module defines the data models used for API communication.
+"""
+
 from pydantic import BaseModel, Field, validator
 from typing import Optional, Dict, Any, List
 from enum import Enum
 from datetime import datetime
-import uuid
 
 
 class TaskType(str, Enum):
+    """Types of tasks that can be scheduled."""
     ORDER = "order"
     SIMULATION = "simulation"
     QUERY = "query"
 
 
 class TaskStatus(str, Enum):
+    """Status states for task lifecycle."""
     QUEUED = "queued"
     PROCESSING = "processing"
     COMPLETED = "completed"
@@ -20,6 +27,7 @@ class TaskStatus(str, Enum):
 
 
 class RegionType(str, Enum):
+    """Geographic regions for task execution."""
     US_EAST = "us-east"
     US_WEST = "us-west"
     EU_WEST = "eu-west"
@@ -27,19 +35,21 @@ class RegionType(str, Enum):
 
 
 class ResourceType(str, Enum):
+    """Types of computational resources."""
     CPU = "cpu"
     GPU = "gpu"
 
 
 class AlgorithmType(str, Enum):
+    """Scheduling algorithms available."""
     FIFO = "fifo"
-    GREEDY = "greedy"
-    MIN_COST_FLOW = "min_cost_flow"
-    ML_DRIVEN = "ml_driven"
+    PRIORITY = "priority"
+    MIN_COST = "min_cost"
 
 
 class TaskCreate(BaseModel):
-    type: TaskType
+    """Schema for creating a new task."""
+    type: TaskType = Field(description="Type of task")
     priority: int = Field(ge=1, le=10, description="Task priority from 1 (lowest) to 10 (highest)")
     cost: float = Field(gt=0, description="Estimated cost to execute the task")
     region: RegionType = Field(description="Preferred execution region")
@@ -59,7 +69,8 @@ class TaskCreate(BaseModel):
 
 
 class TaskResponse(BaseModel):
-    id: uuid.UUID
+    """Schema for task response."""
+    id: str
     type: TaskType
     priority: int
     cost: float
@@ -70,10 +81,15 @@ class TaskResponse(BaseModel):
     completed_at: Optional[datetime] = None
     worker_id: Optional[str] = None
     algorithm_used: Optional[AlgorithmType] = None
-    metadata: Optional[Dict[str, Any]] = None
+    task_metadata: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+        use_enum_values = True
 
 
 class TaskList(BaseModel):
+    """Schema for paginated task list."""
     tasks: List[TaskResponse]
     total: int
     page: int
@@ -81,15 +97,17 @@ class TaskList(BaseModel):
 
 
 class SimulationCreate(BaseModel):
+    """Schema for creating a simulation."""
     task_count: int = Field(ge=1, le=1000, description="Number of tasks to generate")
-    distribution: str = Field(description="Distribution of task types (random, weighted, burst)")
+    distribution: str = Field(default="random", description="Distribution of task types (random, weighted, burst)")
     region_bias: Optional[RegionType] = Field(default=None, description="Region to bias towards")
     priority_range: List[int] = Field(default=[1, 10], description="Range of priorities to generate")
     cost_range: List[float] = Field(default=[0.1, 10.0], description="Range of costs to generate")
 
 
 class SimulationResponse(BaseModel):
-    id: uuid.UUID
+    """Schema for simulation response."""
+    id: str
     task_count: int
     tasks_created: int
     start_time: datetime
@@ -97,14 +115,20 @@ class SimulationResponse(BaseModel):
 
 
 class LogEntry(BaseModel):
-    id: uuid.UUID
-    task_id: uuid.UUID
+    """Schema for log entry."""
+    id: str
+    task_id: str
     timestamp: datetime
     event_type: str
-    details: Dict[str, Any]
+    details: Optional[Dict[str, Any]] = None
+
+    class Config:
+        from_attributes = True
+        use_enum_values = True
 
 
 class LogList(BaseModel):
+    """Schema for paginated log list."""
     logs: List[LogEntry]
     total: int
     page: int
@@ -112,7 +136,8 @@ class LogList(BaseModel):
 
 
 class WorkerPoolResponse(BaseModel):
-    id: uuid.UUID
+    """Schema for worker pool response."""
+    id: str
     name: str
     region: RegionType
     resource_type: ResourceType
@@ -120,38 +145,38 @@ class WorkerPoolResponse(BaseModel):
     capacity: int
     current_load: int
 
+    class Config:
+        from_attributes = True
+        use_enum_values = True
+
 
 class WorkerPoolList(BaseModel):
+    """Schema for worker pool list."""
     worker_pools: List[WorkerPoolResponse]
 
 
 class AlgorithmSwitch(BaseModel):
+    """Schema for switching scheduling algorithm."""
     algorithm: AlgorithmType
 
 
 class SystemStats(BaseModel):
+    """Schema for system statistics."""
     tasks_processed: int
     tasks_pending: int
     tasks_failed: int
+    tasks_completed: int
     average_latency: float
     throughput: float
     worker_utilization: Dict[str, float]
+    queue_size: int
+    scheduler_stats: Dict[str, int]
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    expires_in: int
+class HealthResponse(BaseModel):
+    """Schema for health check response."""
+    status: str
+    database: str
+    queue: str
+    scheduler: str
 
-
-class TokenData(BaseModel):
-    username: Optional[str] = None
-    scopes: List[str] = []
-
-
-class User(BaseModel):
-    username: str
-    email: Optional[str] = None
-    full_name: Optional[str] = None
-    disabled: Optional[bool] = None
-    scopes: List[str] = []
