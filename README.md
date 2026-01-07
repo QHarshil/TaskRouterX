@@ -1,118 +1,73 @@
 # TaskRouterX
 
-**A High-Performance, Cost-Aware Task Routing and Scheduling Engine**
+Cost-aware task routing and scheduling engine with pluggable algorithms. FastAPI backend with real-time dashboard for monitoring worker pool utilization.
 
-TaskRouterX is a lightweight yet powerful backend service designed to simulate the routing and scheduling of asynchronous tasks to a distributed network of worker pools. It provides a RESTful API for task submission, real-time monitoring through a web dashboard, and a modular architecture that allows for different scheduling algorithms to be plugged in.
+## Features
 
-Features: 
+- Pluggable scheduling algorithms (FIFO, Priority, Minimum Cost)
+- Cost and region-aware routing decisions
+- Real-time worker pool monitoring
+- Synthetic load generation for stress testing
+- Zero external dependencies (Python + SQLite)
 
-- **Real-Time Scheduling**: Ingests tasks and schedules them to simulated workers in real-time.
-- **Pluggable Algorithms**: Switch between FIFO, Priority-Based, and Minimum Cost scheduling on the fly.
-- **Cost & Region Awareness**: Makes scheduling decisions based on task cost, priority, and geographic region.
-- **Interactive Dashboard**: A simple, clean web interface to submit tasks, monitor system health, and visualize worker utilization.
-- **Zero Dependencies**: Runs entirely locally with Python and SQLite, no Docker or external databases needed.
+## Quick Start
 
-![Alt text](assets/demo-pic-1.png) ![Alt text](assets/demo-pic-2.png) ![Alt text](assets/demo-pic-3.png)
+```bash
+git clone <repo>
+cd taskrouterx
+chmod +x start.sh
+./start.sh
+```
 
-## 🚀 Getting Started
+- Dashboard: http://localhost:3000
+- API Docs: http://localhost:8000/docs
 
-Get TaskRouterX running on your local machine.
+Stop with `Ctrl+C`.
 
-### Prerequisites
+## Architecture
 
-- **Python 3.7+**
-- `pip` and `venv` (usually included with Python)
+```
+Task Submit → FastAPI → SQLite → In-Memory Queue → Scheduler → Worker Pool
+                                                       ↓
+                                              Algorithm Selection
+                                          (FIFO / Priority / Min-Cost)
+```
 
-### Installation
+| Component | Stack | Purpose |
+|-----------|-------|---------|
+| API | FastAPI | REST interface for tasks and config |
+| Scheduler | Python (threading) | Queue management, worker assignment |
+| Database | SQLite | Task and worker pool persistence |
+| Frontend | HTML/CSS/JS | Dashboard, monitoring, controls |
 
-1.  **Clone the repository:**
+## API
 
-    ```bash
-    git clone
-    cd taskrouterx
-    ```
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/v1/tasks` | POST | Submit task |
+| `/api/v1/tasks` | GET | List recent tasks |
+| `/api/v1/system/stats` | GET | Real-time metrics |
+| `/api/v1/workers` | GET | Worker pool status |
+| `/api/v1/algorithms/switch` | POST | Change scheduling algorithm |
+| `/api/v1/simulate` | POST | Trigger load test |
 
-2.  **Run the startup script:**
+## Scheduling Algorithms
 
-    This single command will create a virtual environment, install dependencies, and start both the backend API and the frontend dashboard. Use bash for convenience:
+| Algorithm | Selection Criteria |
+|-----------|-------------------|
+| FIFO | First in, first out |
+| Priority | Task priority field |
+| Min-Cost | Lowest cost worker with capacity, region-aware |
 
-    ```bash
-    chmod +x start.sh
-    ./start.sh
-    ```
+Switchable at runtime via API or dashboard.
 
-3.  **Access the services:**
-
-    -   **Interactive Dashboard**: [http://localhost:3000](http://localhost:3000)
-    -   **Backend API (Swagger UI)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-
-4.  **Stopping the services:**
-
-    Simply press `Ctrl+C` in the terminal where you ran `./start.sh`.
-
-## 🏗️ Architecture
-
-TaskRouterX uses a simple, modular architecture designed for clarity and extensibility.
-
-| Component          | Technology                | Purpose                                                      |
-| ------------------ | ------------------------- | ------------------------------------------------------------ |
-| **API Server**     | FastAPI                  | Provides a RESTful interface for tasks, monitoring, and configuration. |
-| **Core Engine**    | Python (Multi-Threading)  | Manages the in-memory task queue, scheduler, and worker simulation. |
-| **Database**       | SQLite                    | Persists task, log, and worker pool data.                    |
-| **Frontend**       | HTML, CSS, JS             | A lightweight, interactive dashboard for visualization and control. |
-| **Startup Script** | Shell Script              | Automates setup and runs all services with a single command. |
-
-### Data Flow
-
-1.  A **Task** is submitted to the FastAPI `/api/v1/tasks` endpoint.
-2.  The task is saved to the **SQLite** database with a `QUEUED` status.
-3.  The task ID is pushed into a thread-safe, **in-memory queue**.
-4.  A background **Scheduler** thread pulls the task ID from the queue.
-5.  The active **Scheduling Algorithm** (e.g., Min-Cost) selects the optimal **Worker Pool** based on the task's requirements and current worker load.
-6.  The task is assigned to a simulated **Worker**, which processes it (simulating latency and potential failure).
-7.  The task's status is updated to `COMPLETED` or `FAILED` in the database.
-8.  The **Frontend Dashboard** polls the API to display the latest system stats, worker loads, and task statuses.
-
-## 🎯 Interactive Dashboard
-
-Open [http://localhost:3000](http://localhost:3000) to access the dashboard and:
-
--   **Submit Tasks**: Create new tasks with varying priorities, costs, and regions.
--   **Monitor System Stats**: View real-time metrics like tasks processed, pending, failed, and average latency.
--   **Visualize Worker Pools**: See the current load on each worker pool and how tasks are distributed.
--   **Switch Scheduling Algorithms**: Change the routing strategy on the fly and observe the impact.
--   **Run Traffic Simulations**: Generate a configurable number of synthetic tasks to stress-test the system.
-
-## 📚 API Documentation
-
-Full, interactive API documentation is available via Swagger UI after starting the application:
-
-[http://localhost:8000/docs](http://localhost:8000/docs)
-
-### Key Endpoints
-
--   `POST /api/v1/tasks`: Submit a new task.
--   `GET /api/v1/tasks`: List recent tasks.
--   `GET /api/v1/system/stats`: Get real-time system metrics.
--   `GET /api/v1/workers`: List all worker pools and their status.
--   `POST /api/v1/algorithms/switch`: Change the active scheduling algorithm.
--   `POST /api/v1/simulate`: Trigger a synthetic load test.
-
-## 🧪 Testing
-
-To run the test suite, first make sure you have activated the virtual environment created by `start.sh`:
+## Testing
 
 ```bash
 source venv/bin/activate
-```
-
-Then, run the tests using `pytest`:
-
-```bash
 pytest
 ```
 
-## 📜 License
+## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
+MIT
