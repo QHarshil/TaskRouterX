@@ -68,6 +68,14 @@ source venv/bin/activate
 pytest
 ```
 
+## Screenshots
+
+<p>
+  <img src="assets/demo-pic-1.png" alt="Dashboard" width="270" />
+  <img src="assets/demo-pic-2.png" alt="Worker Pools" width="270" />
+  <img src="assets/demo-pic-3.png" alt="Task Submission" width="270" />
+</p>
+
 ## License
 
 MIT
